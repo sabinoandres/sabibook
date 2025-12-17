@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+python-multipart
+openai-whisper
+pdf2docx
+docx2pdf; sys_platform == 'win32'
+pytesseract
+Pillow
+ffmpeg-python
+moviepy
+python-docx
+python-pptx
+PyPDF2
+pytest
+httpx

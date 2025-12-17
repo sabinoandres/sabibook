@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabibook</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --surface-color: #1e293b;
+            --primary-color: #3b82f6;
+            --accent-color: #8b5cf6;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--surface-color);
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.2);
+            overflow-x: auto;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .content {
+            padding: 2rem;
+            min-height: 300px;
+        }
+
+        .panel {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--text-muted);
+            border-radius: 0.75rem;
+            padding: 3rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: var(--primary-color);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 0.5rem;
+            word-wrap: break-word;
+            display: none;
+        }
+
+        .hidden-input {
+            display: none;
+        }
+
+        .loading {
+            margin-top: 1rem;
+            display: none;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 2rem;">
+        <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M10 10C10 7.23858 12.2386 5 15 5H45C47.7614 5 50 7.23858 50 10V50C50 52.7614 47.7614 55 45 55H15C12.2386 55 10 52.7614 10 50V10Z"
+                fill="url(#paint0_linear)" />
+            <path
+                d="M50 10H15C12.2386 10 10 12.2386 10 15V50C10 52.7614 12.2386 55 15 55H45C47.7614 55 50 52.7614 50 50V10ZM50 10V15"
+                stroke="rgba(255,255,255,0.2)" stroke-width="2" />
+            <path d="M22 25H38" stroke="white" stroke-width="3" stroke-linecap="round" />
+            <path d="M22 35H32" stroke="white" stroke-width="3" stroke-linecap="round" />
+            <path d="M43 18L53 28L43 38" stroke="#3b82f6" stroke-width="4" stroke-linecap="round"
+                stroke-linejoin="round" />
+            <defs>
+                <linearGradient id="paint0_linear" x1="10" y1="5" x2="50" y2="55" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#3B82F6" />
+                    <stop offset="1" stop-color="#8B5CF6" />
+                </linearGradient>
+            </defs>
+        </svg>
+        <h1 style="margin-bottom: 0;">Sabibook</h1>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('audio')">Audio (Whisper)</div>
+            <div class="tab" onclick="switchTab('pdf-word')">PDF ↔ Word</div>
+            <div class="tab" onclick="switchTab('ocr')">OCR Imagen</div>
+            <div class="tab" onclick="switchTab('video')">Video a MP3</div>
+        </div>
+
+        <!-- AUDIO PANEL -->
+        <div id="audio" class="panel active">
+            <h2>Transcribir Audio</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">Sube tus archivos MP3, WAV o M4A.</p>
+
+            <div class="drop-zone" onclick="document.getElementById('audioInput').click()">
+                <p>Haz clic o arrastra un archivo aquí</p>
+                <input type="file" id="audioInput" class="hidden-input" accept="audio/*">
+                <p id="audioName" style="margin-top:0.5rem; color: var(--primary-color);"></p>
+            </div>
+
+            <button onclick="uploadFile('transcribe', 'audioInput', 'audioResult')">Transcribir Audio</button>
+            <div id="loading-audio" class="loading">Procesando... esto puede tardar unos segundos.</div>
+            <div id="audioResult" class="result"></div>
+        </div>
+
+        <!-- PDF-WORD PANEL -->
+        <div id="pdf-word" class="panel">
+            <h2>Conversor de Documentos</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">PDF a Word / Word a PDF / PDF a PPT</p>
+
+            <select id="docType"
+                style="padding: 0.5rem; margin-bottom: 1rem; width: 100%; background: var(--bg-color); color: white; border: 1px solid var(--text-muted); border-radius: 0.5rem;">
+                <option value="convert/pdf-to-word">PDF a Word</option>
+                <option value="convert/word-to-pdf">Word a PDF</option>
+                <option value="convert/pdf-to-ppt">PDF a PowerPoint</option>
+            </select>
+
+            <div class="drop-zone" onclick="document.getElementById('docInput').click()">
+                <p>Selecciona tu documento</p>
+                <input type="file" id="docInput" class="hidden-input">
+                <p id="docName" style="margin-top:0.5rem; color: var(--primary-color);"></p>
+            </div>
+
+            <button onclick="uploadDoc()">Convertir Documento</button>
+            <div id="loading-doc" class="loading">Convirtiendo...</div>
+            <div id="docResult" class="result"></div>
+        </div>
+
+        <!-- OCR PANEL -->
+        <div id="ocr" class="panel">
+            <h2>OCR - Imagen a Texto</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">Extrae texto de PNG, JPG o escaneos.</p>
+
+            <div class="drop-zone" onclick="document.getElementById('ocrInput').click()">
+                <p>Sube una imagen</p>
+                <input type="file" id="ocrInput" class="hidden-input" accept="image/*">
+                <p id="ocrName" style="margin-top:0.5rem; color: var(--primary-color);"></p>
+            </div>
+
+            <button onclick="uploadFile('ocr', 'ocrInput', 'ocrResult')">Extraer Texto</button>
+            <div id="loading-ocr" class="loading">Analizando imagen...</div>
+            <div id="ocrResult" class="result" style="white-space: pre-wrap;"></div>
+        </div>
+
+        <!-- VIDEO PANEL -->
+        <div id="video" class="panel">
+            <h2>Video a Audio</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">Extrae el audio MP3 de tus videos.</p>
+
+            <div class="drop-zone" onclick="document.getElementById('videoInput').click()">
+                <p>Sube un archivo MP4/MOV</p>
+                <input type="file" id="videoInput" class="hidden-input" accept="video/*">
+                <p id="videoName" style="margin-top:0.5rem; color: var(--primary-color);"></p>
+            </div>
+
+            <button onclick="uploadDownload('convert/video-to-audio', 'videoInput', 'loading-video')">Convertir y
+                Descargar</button>
+            <div id="loading-video" class="loading">Procesando video...</div>
+        </div>
+
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tabId) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // File input listeners to show filename
+        ['audio', 'doc', 'ocr', 'video'].forEach(type => {
+            const input = document.getElementById(type + 'Input');
+            const nameDisplay = document.getElementById(type + 'Name');
+            input.addEventListener('change', () => {
+                if (input.files.length > 0) nameDisplay.textContent = input.files[0].name;
+            });
+        });
+
+        // Generic Upload Function (for Text responses like OCR/Whisper)
+        async function uploadFile(endpoint, inputId, resultId) {
+            const fileInput = document.getElementById(inputId);
+            const resultDiv = document.getElementById(resultId);
+            const loadingDiv = document.getElementById('loading-' + inputId.replace('Input', ''));
+
+            if (!fileInput.files[0]) return alert("Por favor selecciona un archivo");
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            loadingDiv.style.display = 'block';
+            resultDiv.style.display = 'none';
+
+            try {
+                const res = await fetch('/' + endpoint, { method: 'POST', body: formData });
+                const data = await res.json();
+
+                resultDiv.style.display = 'block';
+                resultDiv.textContent = data.text || JSON.stringify(data);
+            } catch (e) {
+                alert("Error: " + e.message);
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+
+        // Specific Doc Upload
+        function uploadDoc() {
+            const endpoint = document.getElementById('docType').value;
+            uploadDownload(endpoint, 'docInput', 'loading-doc');
+        }
+
+        // Generic Upload & Download (for Files like PDF/Word/Audio)
+        async function uploadDownload(endpoint, inputId, loadingId) {
+            const fileInput = document.getElementById(inputId);
+            const loadingDiv = document.getElementById(loadingId);
+
+            if (!fileInput.files[0]) return alert("Por favor selecciona un archivo");
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            loadingDiv.style.display = 'block';
+
+            try {
+                const res = await fetch('/' + endpoint, { method: 'POST', body: formData });
+
+                if (!res.ok) {
+                    const errData = await res.json();
+                    throw new Error(errData.detail || "Falló la conversión");
+                }
+
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "converted_file"; // Browser might auto-detect name
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } catch (e) {
+                alert("Error: " + e.message);
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+
+</html>
