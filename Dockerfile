@@ -5,12 +5,10 @@ WORKDIR /app
 # Install system dependencies
 # ffmpeg for audio/video
 # tesseract-ocr for OCR
-# libreoffice for pdf conversion (supports docx2pdf on linux)
+# (LibreOffice removed: Too heavy for 512MB Render Free Tier)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     tesseract-ocr \
-    libreoffice \
-    default-jre \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Torch CPU-only FIRST (Critical for memory/space)
