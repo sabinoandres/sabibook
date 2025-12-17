@@ -18,7 +18,7 @@ def pdf_to_word(pdf_file: str, word_file: str = None):
 
 def word_to_pdf(word_file: str, pdf_file: str = None):
     # ... (existing code) ...
-    """Convert Word DOCX to PDF (Windows only if using docx2pdf)."""
+    """Convert Word DOCX to PDF (Windows using Word, Linux using LibreOffice)."""
     if not pdf_file:
         pdf_file = os.path.splitext(word_file)[0] + ".pdf"
     

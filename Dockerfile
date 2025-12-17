@@ -5,13 +5,16 @@ WORKDIR /app
 # Install system dependencies
 # ffmpeg for audio/video
 # tesseract-ocr for OCR
-# libreoffice for pdf conversion (linux alternative to word)
-RUN apt-get update && apt-get install -y \
+# libreoffice for pdf conversion (supports docx2pdf on linux)
+RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     tesseract-ocr \
     libreoffice \
     default-jre \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Torch CPU-only FIRST (Critical for memory/space)
+RUN pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
