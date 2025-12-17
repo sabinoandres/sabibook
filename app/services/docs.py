@@ -1,7 +1,6 @@
 from pdf2docx import Converter
 from docx2pdf import convert
 import os
-from fastapi import HTTPException
 from pptx import Presentation
 from pptx.util import Inches
 import PyPDF2
@@ -19,18 +18,11 @@ def pdf_to_word(pdf_file: str, word_file: str = None):
 
 def word_to_pdf(word_file: str, pdf_file: str = None):
     # ... (existing code) ...
-    """Convert Word DOCX to PDF (Windows using Word, Linux using LibreOffice)."""
+    """Convert Word DOCX to PDF (Windows only if using docx2pdf)."""
     if not pdf_file:
         pdf_file = os.path.splitext(word_file)[0] + ".pdf"
     
-    try:
-        convert(word_file, pdf_file)
-    except Exception as e:
-        # If on Linux and LibreOffice fails/missing
-        if os.name != 'nt':
-            raise HTTPException(status_code=503, detail="Sabino Andres ha decidido sacar esta opción.")
-        raise e
-        
+    convert(word_file, pdf_file)
     return pdf_file
 
 def pdf_to_ppt(pdf_file: str, ppt_file: str = None):

@@ -1,4 +1,4 @@
-from moviepy import VideoFileClip
+from moviepy.editor import VideoFileClip
 import os
 
 def video_to_audio(video_file: str, audio_file: str = None):
@@ -7,15 +7,6 @@ def video_to_audio(video_file: str, audio_file: str = None):
         audio_file = os.path.splitext(video_file)[0] + ".mp3"
         
     video = VideoFileClip(video_file)
-    
-    if video.audio is None:
-        video.close()
-        raise ValueError("No audio track found in this video file (or FFmpeg failed to read it).")
-        
-    try:
-        video.audio.write_audiofile(audio_file)
-    finally:
-        video.close()
-        
+    video.audio.write_audiofile(audio_file)
     return audio_file
 

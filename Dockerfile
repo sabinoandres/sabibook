@@ -5,14 +5,13 @@ WORKDIR /app
 # Install system dependencies
 # ffmpeg for audio/video
 # tesseract-ocr for OCR
-# (LibreOffice removed: Too heavy for 512MB Render Free Tier)
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# libreoffice for pdf conversion (linux alternative to word)
+RUN apt-get update && apt-get install -y \
     ffmpeg \
     tesseract-ocr \
+    libreoffice \
+    default-jre \
     && rm -rf /var/lib/apt/lists/*
-
-# Install Torch CPU-only FIRST (Critical for memory/space)
-RUN pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
