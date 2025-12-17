@@ -4,7 +4,38 @@ from fastapi.staticfiles import StaticFiles
 import shutil
 import os
 import secrets
-from app.services import audio, docs, image, video
+
+# Import services with error handling
+try:
+    from app.services import audio, docs, image, video
+except ImportError as e:
+    print(f"Warning: Some services may not be available: {e}")
+    # Create dummy modules to prevent crashes
+    class DummyService:
+        def __getattr__(self, name):
+            def dummy_func(*args, **kwargs):
+                raise HTTPException(status_code=503, detail=f"Service not available: {name}")
+            return dummy_func
+    
+    try:
+        from app.services import audio
+    except ImportError:
+        audio = DummyService()
+    
+    try:
+        from app.services import docs
+    except ImportError:
+        docs = DummyService()
+    
+    try:
+        from app.services import image
+    except ImportError:
+        image = DummyService()
+    
+    try:
+        from app.services import video
+    except ImportError:
+        video = DummyService()
 
 app = FastAPI(title="All-in-One Converter API")
 
